@@ -1,0 +1,21 @@
+syntax = "proto3";
+
+option go_package = "svelte-go/proto";
+package proto;
+
+import "google/protobuf/timestamp.proto";
+
+service Service {
+    rpc CurrentTime(Empty) returns (google.protobuf.Timestamp) {}
+    rpc Ping(PingRequest) returns (PingReply) {}
+}
+
+message Empty {}
+
+message PingRequest {
+    string message = 1;
+}
+
+message PingReply {
+    string message = 1;
+}
