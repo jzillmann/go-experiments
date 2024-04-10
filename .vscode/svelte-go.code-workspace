@@ -1,0 +1,21 @@
+{
+	"folders": [
+		{
+			"name": "ROOT",
+			"path": "../"
+		},
+		{
+			"name": "server",
+			"path": "../server"
+		},
+		{
+			"name": "ui",
+			"path": "../ui"
+		},
+		{
+			"name": "proto",
+			"path": "../proto"
+		}
+	],
+	"settings": {}
+}

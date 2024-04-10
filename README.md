@@ -4,7 +4,7 @@ Example project setup with a `Go` server a `Svelte` UI and `GRPC` in between.
 
 ## Featurs
 
-- [ ] VSCode workspace setup
+- [x] VSCode workspace setup
 - 
 
 ## Global Installations
