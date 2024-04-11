@@ -18,4 +18,6 @@ Example project setup with a `Go` server a `Svelte` UI and `GRPC` in between.
 ## Commands
 
 - Generate GRPC code: `./proto.sh` (Execute every time you change the proto files)
-- **[server]** Sync used modules from code with the `go.mod` declarations: `go mod tidy`
+- **[server]**:
+ - Sync used modules from code with the `go.mod` declarations: `go mod tidy`
+ - Start the server `go run main.go`
