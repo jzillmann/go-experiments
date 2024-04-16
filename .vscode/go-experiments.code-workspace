@@ -11,10 +11,6 @@
 		{
 			"name": "ui",
 			"path": "../ui"
-		},
-		{
-			"name": "proto",
-			"path": "../proto"
 		}
 	],
 	"settings": {}
