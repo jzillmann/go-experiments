@@ -1,47 +1,64 @@
 <script lang="ts">
-	import svelteLogo from './assets/svelte.svg';
-	import viteLogo from '/vite.svg';
-	import Counter from './lib/Counter.svelte';
+	import { scale } from 'svelte/transition';
+	import Spinner from './lib/Spinner.svelte';
+	import TodoList from './lib/TodoList.svelte';
+	import { createTodo, fetchTodos, syncingTodos, todoError, todos } from './lib/todos';
+
+	let inputRef: HTMLElement;
+	fetchTodos().then(() => inputRef.focus());
 </script>
 
 <main>
 	<div>
-		<a href="https://vitejs.dev" target="_blank" rel="noreferrer">
-			<img src={viteLogo} class="logo" alt="Vite Logo" />
-		</a>
-		<a href="https://svelte.dev" target="_blank" rel="noreferrer">
-			<img src={svelteLogo} class="logo svelte" alt="Svelte Logo" />
-		</a>
-	</div>
-	<h1>Vite + Svelte</h1>
-
-	<div class="card">
-		<Counter />
+		<div class="flex justify-center space-x-2">
+			<h1 class="mb-6">Your Todo Items!</h1>
+			<div class="w-8">
+				{#if $syncingTodos}
+					<Spinner />
+				{/if}
+			</div>
+		</div>
 	</div>
 
-	<p>
-		Check out <a href="https://github.com/sveltejs/kit#readme" target="_blank" rel="noreferrer"
-			>SvelteKit</a
-		>, the official Svelte app framework powered by Vite!
-	</p>
+	{#if $todoError}
+		<p transition:scale class="mb-4 mt-2 bg-red-700 p-2">{$todoError}</p>
+	{/if}
 
-	<p class="read-the-docs">Click on the Vite and Svelte logos to learn more</p>
+	<div class="board m-60 mt-14">
+		<input
+			bind:this={inputRef}
+			class="border"
+			placeholder="what needs to be done?"
+			on:keydown={(e) => {
+				if (e.key !== 'Enter') return;
+				createTodo(e.currentTarget.value);
+				e.currentTarget.value = '';
+			}}
+		/>
+		<div>
+			<h2>Todo</h2>
+			<TodoList todos={$todos.filter((t) => !t.completed)} />
+		</div>
+		<div>
+			<h2>Done</h2>
+			<TodoList todos={$todos.filter((t) => t.completed)} />
+		</div>
+	</div>
 </main>
 
 <style>
-	.logo {
-		height: 6em;
-		padding: 1.5em;
-		will-change: filter;
-		transition: filter 300ms;
+	.board {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		grid-column-gap: 1em;
+		max-width: 36em;
+		margin: 0 auto;
 	}
-	.logo:hover {
-		filter: drop-shadow(0 0 2em #646cffaa);
-	}
-	.logo.svelte:hover {
-		filter: drop-shadow(0 0 2em #ff3e00aa);
-	}
-	.read-the-docs {
-		color: #888;
+
+	.board > input {
+		font-size: 1.4em;
+		grid-column: 1/3;
+		padding: 0.5em;
+		margin: 0 0 1rem 0;
 	}
 </style>
