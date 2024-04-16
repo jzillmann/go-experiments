@@ -5,8 +5,5 @@ Go server with various tech setups:
 
 ## Commands
 
-- **[Server]**:
-  - Sync used modules from code with the `go.mod` declarations: `go mod tidy`
-  - Start the server `go run main.go`
-- **[UI]**:
-  - Run dev server `npm run dev`
+- `make prep` run after doing changes and before commiting (cleaning up the server and checking the UI code)
+- `make dev` run backend & frontend
