@@ -21,7 +21,7 @@
 	</div>
 
 	{#if $todoError}
-		<p transition:scale class="mb-4 mt-2 bg-red-700 p-2">{$todoError}</p>
+		<p transition:scale class="mb-4 mt-2 bg-red-600 p-2">{$todoError}</p>
 	{/if}
 
 	<div class="board m-60 mt-14">

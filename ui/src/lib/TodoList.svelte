@@ -21,7 +21,7 @@
 					type="checkbox"
 					class="cursor-pointer"
 					checked={todo.completed}
-					on:change={() => updateTodo({ ...todo, completed: !todo.completed })}
+					on:change={() => updateTodo(todo.id, { completed: !todo.completed })}
 				/>
 
 				<span>{todo.title}</span>

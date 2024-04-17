@@ -5,8 +5,11 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/go-chi/chi"
-	"github.com/go-chi/chi/middleware"
+	"github.com/danielgtaylor/huma/v2"
+	"github.com/danielgtaylor/huma/v2/adapters/humachi"
+
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	"github.com/go-chi/render"
 
@@ -20,7 +23,7 @@ func Routes() *chi.Mux {
 		// AllowedOrigins:   []string{"https://foo.com"}, // Use this to allow specific origin hosts
 		AllowedOrigins: []string{"https://*", "http://*"},
 		// AllowOriginFunc:  func(r *http.Request, origin string) bool { return true },
-		AllowedMethods:   []string{"GET", "POST", "PUT", "DELETE", "OPTIONS"},
+		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowedHeaders:   []string{"Accept", "Authorization", "Content-Type", "X-CSRF-Token"},
 		ExposedHeaders:   []string{"Link"},
 		AllowCredentials: false,
@@ -35,9 +38,8 @@ func Routes() *chi.Mux {
 		middleware.Recoverer,       // Recover from panics without crashing server
 	)
 
-	router.Route("/v1", func(r chi.Router) {
-		r.Mount("/api/todo", features.Routes())
-	})
+	api := humachi.New(router, huma.DefaultConfig("My API", "1.0.0"))
+	features.TodoRoutes(api, "/todos")
 
 	return router
 }

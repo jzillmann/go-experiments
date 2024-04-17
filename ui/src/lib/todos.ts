@@ -11,16 +11,15 @@ export const todoError = writable<string | null>(null);
 
 export const todos = initializeStore(() => {
 	const { set, update, subscribe } = writable(new Array<Todo>());
-
 	return {
 		subscribe,
 		set,
 		addTodo: (todo: Todo) => update((todos) => [...todos, todo]),
-		updateTodo: (todo: Todo) =>
+		updateTodo: (id: number, todo: Partial<Omit<Todo, 'id'>>) =>
 			update((todos) =>
 				todos.map((existing) => {
-					if (existing.id === todo.id) {
-						return todo;
+					if (existing.id === id) {
+						return { ...existing, ...todo };
 					}
 					return existing;
 				})
@@ -30,30 +29,30 @@ export const todos = initializeStore(() => {
 });
 
 export async function fetchTodos(): Promise<void> {
-	return call<Todo[]>('GET', 'todo', todos.set);
+	return call<Todo[]>('GET', 'todos', todos.set);
 }
 
 export async function createTodo(title: string): Promise<void> {
-	return call<Todo>('POST', 'todo', todos.addTodo, { title });
+	return call<Todo>('POST', 'todos', todos.addTodo, { title });
 }
 
 export async function removeTodo(id: number): Promise<void> {
-	return call<void>('DELETE', `todo/${id}`, () => todos.removeTodo(id));
+	return call<void>('DELETE', `todos/${id}`, () => todos.removeTodo(id));
 }
 
-export async function updateTodo(todo: Partial<Todo>): Promise<void> {
-	return call<Todo>('PUT', `todo/${todo.id}`, todos.updateTodo, todo);
+export async function updateTodo(id: number, todo: Partial<Omit<Todo, 'id'>>): Promise<void> {
+	return call<Todo>('PATCH', `todos/${id}`, () => todos.updateTodo(id, todo), todo);
 }
 
 async function call<T>(
-	method: 'POST' | 'GET' | 'PUT' | 'DELETE',
+	method: 'POST' | 'GET' | 'PUT' | 'PATCH' | 'DELETE',
 	path: string,
 	handler: (res: T) => void,
 	body?: object
 ): Promise<void> {
 	todoError.set(null);
 	syncingTodos.set(true);
-	return fetch(`http://localhost:8080/v1/api/${path}`, {
+	return fetch(`http://localhost:8080/${path}`, {
 		method: method,
 		headers: {
 			'Content-Type': 'application/json'
@@ -64,12 +63,19 @@ async function call<T>(
 			if (response.ok) {
 				return response.text().then((t) => (t ? JSON.parse(t) : {}));
 			}
-			console.log('!!', response);
-			const { error } = await response.json();
-			throw new Error(error);
+
+			let responseJson;
+			try {
+				responseJson = await response.json();
+			} catch (e) {
+				throw new Error(`${response.status}: ${response.statusText}`);
+			}
+			// typical huma error
+			const { errors } = responseJson; // TODO this needs refinement
+			throw new Error(`${errors[0].location}: ${errors[0].message}`);
 		})
 		.then((response) => handler(response))
-		.catch(todoError.set)
+		.catch((err) => todoError.set(err.message || err))
 		.finally(() => syncingTodos.set(false));
 }
 
