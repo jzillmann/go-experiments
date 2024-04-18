@@ -2,7 +2,7 @@
 
 # server & ui
 dev: 
-	@$(MAKE) server & $(MAKE) ui
+	@$(MAKE) server-dev & $(MAKE) ui
 
 prep:
 	@$(MAKE) tidy & $(MAKE) check
@@ -17,6 +17,10 @@ tidy:
 server:
 	@echo "Starting the server..."
 	@cd server && go run main.go
+
+server-dev:
+	@echo "Starting the server..."
+	@cd server && wgo run -verbose main.go
 
 
 # UI
